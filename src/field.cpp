@@ -8,9 +8,9 @@ using namespace std;
 using namespace sf;
 using namespace arsuhinars;
 
-static ConvexShape panel;						// Подложка
-static vector<Tile> emptyTiles;					// Массив пустых тайлов
-static vector<unique_ptr<Tile>> deletingTiles;	// Тайлы, которые должны будут быть удаленны
+static ConvexShape panel;						// РџРѕРґР»РѕР¶РєР°
+static vector<Tile> emptyTiles;					// РњР°СЃСЃРёРІ РїСѓСЃС‚С‹С… С‚Р°Р№Р»РѕРІ
+static vector<unique_ptr<Tile>> deletingTiles;	// РўР°Р№Р»С‹, РєРѕС‚РѕСЂС‹Рµ РґРѕР»Р¶РЅС‹ Р±СѓРґСѓС‚ Р±С‹С‚СЊ СѓРґР°Р»РµРЅРЅС‹
 
 size_t arsuhinars::field::getTileIndex(unsigned int x, unsigned int y)
 {
@@ -31,11 +31,11 @@ void arsuhinars::field::init()
 	auto tilesCount = static_cast<size_t>(fieldSize * fieldSize);
 
 	if (game::state.tilemap.size() < tilesCount) {
-		// Инитилизируем поле
+		// РРЅРёС‚РёР»РёР·РёСЂСѓРµРј РїРѕР»Рµ
 		game::state.tilemap.clear();
 		game::state.tilemap.resize(tilesCount);
 
-		// Создаем два тайла в начале игры
+		// РЎРѕР·РґР°РµРј РґРІР° С‚Р°Р№Р»Р° РІ РЅР°С‡Р°Р»Рµ РёРіСЂС‹
 		spawnTile();
 		spawnTile();
 	}
@@ -52,7 +52,7 @@ void arsuhinars::field::init()
 		}
 	}
 
-	// Создаем подложку
+	// РЎРѕР·РґР°РµРј РїРѕРґР»РѕР¶РєСѓ
 	auto panelSize = game::fieldRect.width * (1.0f - game::theme.panelMargin * 2);
 
 	panel = createRoundedRect(
@@ -90,7 +90,7 @@ void arsuhinars::field::render()
 	for (auto& tile : game::state.tilemap) {
 		if (tile) {
 			tile->render();
-			// Сбрасываем флаг
+			// РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі
 			tile->wasAlreadySummed = false;
 		}
 	}
@@ -102,7 +102,7 @@ void arsuhinars::field::spawnTile()
 
 	freeTilesIndexes.clear();
 
-	// Находим свободные позиции для плиток
+	// РќР°С…РѕРґРёРј СЃРІРѕР±РѕРґРЅС‹Рµ РїРѕР·РёС†РёРё РґР»СЏ РїР»РёС‚РѕРє
 	for (size_t i = 0; i < game::state.tilemap.size(); i++) {
 		if (!game::state.tilemap[i]) {
 			freeTilesIndexes.push_back(static_cast<unsigned int>(i));
@@ -113,20 +113,20 @@ void arsuhinars::field::spawnTile()
 		return;
 	}
 
-	// Выбираем случайную плитку
+	// Р’С‹Р±РёСЂР°РµРј СЃР»СѓС‡Р°Р№РЅСѓСЋ РїР»РёС‚РєСѓ
 	unsigned int nextTileIndex = freeTilesIndexes[
 		static_cast<size_t>(utils::randomRange(0, static_cast<int>(freeTilesIndexes.size())))
 	];
 
 	auto tilePos = getTilePos(nextTileIndex);
 
-	// Спавним тайл
+	// РЎРїР°РІРЅРёРј С‚Р°Р№Р»
 	game::state.tilemap[nextTileIndex] = make_unique<Tile>(
 		Vector2f(
 			static_cast<float>(tilePos.x),
 			static_cast<float>(tilePos.y)
 		),
-		utils::random() < 0.9f ? 1 : 2	// Шанс спавна двойки - 90%, четверки - 10%
+		utils::random() < 0.9f ? 1 : 2	// РЁР°РЅСЃ СЃРїР°РІРЅР° РґРІРѕР№РєРё - 90%, С‡РµС‚РІРµСЂРєРё - 10%
 	);
 	game::state.tilemap[nextTileIndex]->
 		playAnimation(Tile::Animation::Appear);
@@ -136,7 +136,7 @@ void arsuhinars::field::moveTilesUp()
 {
 	bool hasAnyTileMoved = false;
 
-	// Перемещаем все тайлы снизу вверх
+	// РџРµСЂРµРјРµС‰Р°РµРј РІСЃРµ С‚Р°Р№Р»С‹ СЃРЅРёР·Сѓ РІРІРµСЂС…
 	for (unsigned int y1 = 1; y1 < game::state.fieldSize; y1++) {
 		for (unsigned int y = y1; y > 0; y--) {
 			for (unsigned int x = 0; x < game::state.fieldSize; x++) {
@@ -156,7 +156,7 @@ void arsuhinars::field::moveTilesRight()
 {
 	bool hasAnyTileMoved = false;
 
-	// Перемещаем все тайлы слева направо
+	// РџРµСЂРµРјРµС‰Р°РµРј РІСЃРµ С‚Р°Р№Р»С‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ
 	for (int x1 = game::state.fieldSize - 1; x1 >= 0; x1--) {
 		for (unsigned int x = x1; x < game::state.fieldSize - 1; x++) {
 			for (unsigned int y = 0; y < game::state.fieldSize; y++) {
@@ -176,7 +176,7 @@ void arsuhinars::field::moveTilesDown()
 {
 	bool hasAnyTileMoved = false;
 
-	// Перемещаем все тайлы снизу вверх
+	// РџРµСЂРµРјРµС‰Р°РµРј РІСЃРµ С‚Р°Р№Р»С‹ СЃРЅРёР·Сѓ РІРІРµСЂС…
 	for (int y1 = game::state.fieldSize - 1; y1 >= 0; y1--) {
 		for (unsigned int y = y1; y < game::state.fieldSize - 1; y++) {
 			for (unsigned int x = 0; x < game::state.fieldSize; x++) {
@@ -196,7 +196,7 @@ void arsuhinars::field::moveTilesLeft()
 {
 	bool hasAnyTileMoved = false;
 
-	// Перемещаем все тайлы справо налево
+	// РџРµСЂРµРјРµС‰Р°РµРј РІСЃРµ С‚Р°Р№Р»С‹ СЃРїСЂР°РІРѕ РЅР°Р»РµРІРѕ
 	for (unsigned int x1 = 1; x1 < game::state.fieldSize; x1++) {
 		for (unsigned int x = x1; x > 0; x--) {
 			for (unsigned int y = 0; y < game::state.fieldSize; y++) {
@@ -228,12 +228,12 @@ bool arsuhinars::field::moveTile(sf::Vector2u from, sf::Vector2u to)
 		return false;
 	}
 
-	// Если тайл сверху пустой
+	// Р•СЃР»Рё С‚Р°Р№Р» СЃРІРµСЂС…Сѓ РїСѓСЃС‚РѕР№
 	if (!nextTile) {
-		// Перемещаем текущий тайл
+		// РџРµСЂРµРјРµС‰Р°РµРј С‚РµРєСѓС‰РёР№ С‚Р°Р№Р»
 		currTile->moveTo(nextPos);
 
-		// Меняем их местами
+		// РњРµРЅСЏРµРј РёС… РјРµСЃС‚Р°РјРё
 		swap(
 			nextTile,
 			currTile
@@ -241,21 +241,21 @@ bool arsuhinars::field::moveTile(sf::Vector2u from, sf::Vector2u to)
 
 		return true;
 	}
-	// Если номера тайлов совпадают
+	// Р•СЃР»Рё РЅРѕРјРµСЂР° С‚Р°Р№Р»РѕРІ СЃРѕРІРїР°РґР°СЋС‚
 	else if (!nextTile->wasAlreadySummed && !currTile->wasAlreadySummed && nextTile->getValue() == currTile->getValue()) {
-		// Перемещаем текущий тайл
+		// РџРµСЂРµРјРµС‰Р°РµРј С‚РµРєСѓС‰РёР№ С‚Р°Р№Р»
 		currTile->moveTo(nextPos);
 
-		// Увеличиваем число тайла в 2 раза
+		// РЈРІРµР»РёС‡РёРІР°РµРј С‡РёСЃР»Рѕ С‚Р°Р№Р»Р° РІ 2 СЂР°Р·Р°
 		nextTile->setValue(nextTile->getValue() + 1);
-		// Устанавливаем флаг
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі
 		nextTile->wasAlreadySummed = true;
-		// Проигрываем анимацию
+		// РџСЂРѕРёРіСЂС‹РІР°РµРј Р°РЅРёРјР°С†РёСЋ
 		nextTile->playAnimation(Tile::Animation::ChangeValue);
 
 		deletingTiles.push_back(unique_ptr<Tile>());
 
-		// Добавляем текущий тайл в список для удаления
+		// Р”РѕР±Р°РІР»СЏРµРј С‚РµРєСѓС‰РёР№ С‚Р°Р№Р» РІ СЃРїРёСЃРѕРє РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
 		swap(
 			game::state.tilemap[currTileIndex],
 			deletingTiles.back()

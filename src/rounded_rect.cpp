@@ -18,7 +18,7 @@ sf::ConvexShape arsuhinars::createRoundedRect(sf::Vector2f size, float radius, s
     shape.setPoint(circlePointsCount * 3 + 6, Vector2f(radius, size.y));
     shape.setPoint(circlePointsCount * 4 + 7, Vector2f(0.0f, size.y - radius));
 
-    // Координаты центра всех четвертей
+    // РљРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР° РІСЃРµС… С‡РµС‚РІРµСЂС‚РµР№
     auto c1 = Vector2f(radius, radius);
     auto c2 = Vector2f(size.x - radius, radius);
     auto c3 = Vector2f(size.x - radius, size.y - radius);
@@ -27,11 +27,11 @@ sf::ConvexShape arsuhinars::createRoundedRect(sf::Vector2f size, float radius, s
     float angle = 0.0f;
     float delta = static_cast<float>(M_PI) / 2.0f / (circlePointsCount + 1);
 
-    // Создаем четверти окружностей
+    // РЎРѕР·РґР°РµРј С‡РµС‚РІРµСЂС‚Рё РѕРєСЂСѓР¶РЅРѕСЃС‚РµР№
     for (size_t i = 0; i < circlePointsCount; i++) {
         angle += delta;
 
-        // Смещение данной точки
+        // РЎРјРµС‰РµРЅРёРµ РґР°РЅРЅРѕР№ С‚РѕС‡РєРё
         auto o1 = Vector2f(cos(angle), sin(angle));
         auto o2 = Vector2f(
             cos(static_cast<float>(M_PI) / 2.0f - angle),

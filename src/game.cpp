@@ -15,13 +15,13 @@ Theme		game::theme = defaultTheme;
 IntRect		game::fieldRect;
 GameState	game::state;
 
-static bool isRunning = false;	// Запущена ли игра
-static Clock gameClock;			// Игровые часы
-static float timeDelta;			// Время в секундах, прошедшее с последнего кадра
+static bool isRunning = false;	// Р—Р°РїСѓС‰РµРЅР° Р»Рё РёРіСЂР°
+static Clock gameClock;			// РРіСЂРѕРІС‹Рµ С‡Р°СЃС‹
+static float timeDelta;			// Р’СЂРµРјСЏ РІ СЃРµРєСѓРЅРґР°С…, РїСЂРѕС€РµРґС€РµРµ СЃ РїРѕСЃР»РµРґРЅРµРіРѕ РєР°РґСЂР°
 
 void arsuhinars::game::run()
 {
-	// Создаем окно игры
+	// РЎРѕР·РґР°РµРј РѕРєРЅРѕ РёРіСЂС‹
 	window = make_unique<RenderWindow>(
 		VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
 		WINDOW_TITLE,
@@ -32,10 +32,10 @@ void arsuhinars::game::run()
 	);
 	window->setFramerateLimit(FRAMERATE_LIMIT);
 
-	// Загружаем шрифт
+	// Р—Р°РіСЂСѓР¶Р°РµРј С€СЂРёС„С‚
 	font->loadFromMemory(Roboto_Regular_ttf, Roboto_Regular_ttf_len);
 
-	// Находим область игрового поля на экране
+	// РќР°С…РѕРґРёРј РѕР±Р»Р°СЃС‚СЊ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ РЅР° СЌРєСЂР°РЅРµ
 	fieldRect.width = min(WINDOW_WIDTH, WINDOW_HEIGHT);
 	fieldRect.height = fieldRect.width;
 	if (WINDOW_WIDTH > WINDOW_HEIGHT) {
@@ -47,25 +47,25 @@ void arsuhinars::game::run()
 		fieldRect.top = static_cast<int>((WINDOW_HEIGHT - WINDOW_WIDTH) / 2.0f);
 	}
 
-	// Загружаем игровое поле
+	// Р—Р°РіСЂСѓР¶Р°РµРј РёРіСЂРѕРІРѕРµ РїРѕР»Рµ
 	state.load();
 	field::init();
 
 	gameClock.restart();
 
-	// Создаем основной цикл игры
+	// РЎРѕР·РґР°РµРј РѕСЃРЅРѕРІРЅРѕР№ С†РёРєР» РёРіСЂС‹
 	isRunning = true;
 	while (isRunning) {
 		update();
 		render();
 	}
 
-	// Освобождаем память, занятую шрифтом
+	// РћСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ, Р·Р°РЅСЏС‚СѓСЋ С€СЂРёС„С‚РѕРј
 	font.release();
 
-	// Сохраняем игру
+	// РЎРѕС…СЂР°РЅСЏРµРј РёРіСЂСѓ
 	state.save();
-	// и закрываем окно
+	// Рё Р·Р°РєСЂС‹РІР°РµРј РѕРєРЅРѕ
 	window->close();
 }
 
@@ -79,14 +79,14 @@ void arsuhinars::game::update()
 {
 	Event ev;
 	while (window->pollEvent(ev)) {
-		// Обрабатываем события окна
+		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃРѕР±С‹С‚РёСЏ РѕРєРЅР°
 		switch (ev.type) {
 		case Event::KeyPressed:
-			// Клавиша нажата
+			// РљР»Р°РІРёС€Р° РЅР°Р¶Р°С‚Р°
 			handleInput(ev.key);
 			break;
 		case Event::Closed:
-			// Окно было закрыто
+			// РћРєРЅРѕ Р±С‹Р»Рѕ Р·Р°РєСЂС‹С‚Рѕ
 			isRunning = false;
 			break;
 		}
@@ -111,7 +111,7 @@ void arsuhinars::game::handleInput(sf::Event::KeyEvent& ev)
 	}
 
 	switch (ev.code) {
-	// Обрабатываем кнопки перемещения
+	// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РєРЅРѕРїРєРё РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	case Keyboard::Up:
 	case Keyboard::W:
 		field::moveTilesUp();
@@ -129,7 +129,7 @@ void arsuhinars::game::handleInput(sf::Event::KeyEvent& ev)
 		field::moveTilesLeft();
 		break;
 	case Keyboard::R:
-		// Кнопка сброса игры
+		// РљРЅРѕРїРєР° СЃР±СЂРѕСЃР° РёРіСЂС‹
 		reset();
 		break;
 	}

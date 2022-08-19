@@ -53,7 +53,7 @@ sf::Vector2f arsuhinars::Tile::calcTileScreenPos(sf::Vector2f position)
 
 void arsuhinars::Tile::render()
 {
-	// Анимируем перемещение тайла
+	// РђРЅРёРјРёСЂСѓРµРј РїРµСЂРµРјРµС‰РµРЅРёРµ С‚Р°Р№Р»Р°
 	if (m_isMoving) {
 		moveFactor += moveDelta * game::getTimeDelta();
 
@@ -81,7 +81,7 @@ void arsuhinars::Tile::render()
 			scaleFactor = 1.0f;
 		}
 		else {
-			// Анимируем тайл
+			// РђРЅРёРјРёСЂСѓРµРј С‚Р°Р№Р»
 			switch (currAnim) {
 			case Animation::Appear:
 				scaleFactor = 0.5f + 0.5f * animFactor;
@@ -170,7 +170,7 @@ void arsuhinars::Tile::updateTextScale()
 	auto maxTextWidth = tileSize * (1.0f - game::theme.tileTextMargin * 2.0f);
 
 	if (bounds.width > maxTextWidth) {
-		// Маштабируем текст под границы
+		// РњР°С€С‚Р°Р±РёСЂСѓРµРј С‚РµРєСЃС‚ РїРѕРґ РіСЂР°РЅРёС†С‹
 		float scale = maxTextWidth / bounds.width * scaleFactor;
 
 		text.setScale(Vector2f(scale, scale));
