@@ -8,7 +8,7 @@ using namespace std;
 using namespace sf;
 using namespace arsuhinars;
 
-static ConvexShape panel;						// Подложка
+static RoundedRectShape panel;						// Подложка
 static vector<Tile> emptyTiles;					// Массив пустых тайлов
 static vector<unique_ptr<Tile>> deletingTiles;	// Тайлы, которые должны будут быть удаленны
 
@@ -52,20 +52,44 @@ void arsuhinars::field::init()
 		}
 	}
 
-	// Создаем подложку
+	panel.setFillColor(game::theme.panelColor);
+
+	updateFieldSize();
+	updateTilesSizes();
+}
+
+void arsuhinars::field::updateFieldSize()
+{
+	// Обновляем подложку
 	auto panelSize = game::fieldRect.width * (1.0f - game::theme.panelMargin * 2);
 
-	panel = createRoundedRect(
-		Vector2f(panelSize, panelSize),
-		panelSize * game::theme.panelRounding
-	);
+	panel.setSize(Vector2f(panelSize, panelSize));
+	panel.setRadius(panelSize * game::theme.panelRounding);
 	panel.setPosition(
 		Vector2f(
-			static_cast<float>(game::fieldRect.left), 
+			static_cast<float>(game::fieldRect.left),
 			static_cast<float>(game::fieldRect.top)) +
 		static_cast<float>(game::theme.panelMargin * game::fieldRect.width) * Vector2f(1.0f, 1.0f)
 	);
-	panel.setFillColor(game::theme.panelColor);
+}
+
+void arsuhinars::field::updateTilesSizes()
+{
+	for (auto& tile : emptyTiles) {
+		tile.updateSize();
+	}
+	
+	for (auto& tile : deletingTiles) {
+		if (tile) {
+			tile->updateSize();
+		}
+	}
+	
+	for (auto& tile : game::state.tilemap) {
+		if (tile) {
+			tile->updateSize();
+		}
+	}
 }
 
 void arsuhinars::field::render()
@@ -130,6 +154,41 @@ void arsuhinars::field::spawnTile()
 	);
 	game::state.tilemap[nextTileIndex]->
 		playAnimation(Tile::Animation::Appear);
+}
+
+void arsuhinars::field::handleInput(const sf::Keyboard::Key& key)
+{
+	if (isAnyTileMoving()) {
+		return;
+	}
+
+	bool isMoveKey = true;
+	switch (key) {
+	case Keyboard::Up:
+	case Keyboard::W:
+		field::moveTilesUp();
+		break;
+	case Keyboard::Right:
+	case Keyboard::D:
+		field::moveTilesRight();
+		break;
+	case Keyboard::Down:
+	case Keyboard::S:
+		field::moveTilesDown();
+		break;
+	case Keyboard::Left:
+	case Keyboard::A:
+		field::moveTilesLeft();
+		break;
+	default:
+		isMoveKey = false;
+		break;
+	}
+
+	if (isMoveKey && !isThereAnyMove()) {
+		// Проигрыш, если у игрока нет возможности ходить
+		game::lose();
+	}
 }
 
 void arsuhinars::field::moveTilesUp()
@@ -261,6 +320,9 @@ bool arsuhinars::field::moveTile(sf::Vector2u from, sf::Vector2u to)
 			deletingTiles.back()
 		);
 
+		// Добавляем игроку очки
+		game::state.score += utils::findPowerOfTwo(nextTile->getValue());
+
 		return true;
 	}
 
@@ -275,5 +337,39 @@ bool arsuhinars::field::isAnyTileMoving()
 		}
 	}
 
+	return false;
+}
+
+bool arsuhinars::field::isThereAnyMove()
+{
+	for (unsigned int x = 0; x < game::state.fieldSize; x++) {
+		for (unsigned int y = 0; y < game::state.fieldSize; y++) {
+			auto& tile = game::state.tilemap[getTileIndex(x, y)];
+			if (!tile) {
+				// Если данный тайл пустой (игрок может сходить в него)
+				return true;
+			}
+
+			// Проверяем соседние тайлы.
+			// Возвращаем истину если тайл пустой или его число равно числу
+			// данного тайла.
+			// Тайлы слева и сверху нет смысла проверять, так как
+			// они были уже проверенны в предыдущих итерациях
+
+			if (x < game::state.fieldSize - 1) {
+				auto& neighbor = game::state.tilemap[getTileIndex(x + 1, y)];
+				if (!neighbor || neighbor->getValue() == tile->getValue()) {
+					return true;
+				}
+			}
+
+			if (y < game::state.fieldSize - 1) {
+				auto& neighbor = game::state.tilemap[getTileIndex(x, y + 1)];
+				if (!neighbor || neighbor->getValue() == tile->getValue()) {
+					return true;
+				}
+			}
+		}
+	}
 	return false;
 }

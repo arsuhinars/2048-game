@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\button.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\field.h" />
     <ClInclude Include="src\game.h" />
@@ -147,15 +148,18 @@
     <ClInclude Include="src\rounded_rect.h" />
     <ClInclude Include="src\theme.h" />
     <ClInclude Include="src\tile.h" />
+    <ClInclude Include="src\ui.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\button.cpp" />
     <ClCompile Include="src\field.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\game_state.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\rounded_rect.cpp" />
     <ClCompile Include="src\tile.cpp" />
+    <ClCompile Include="src\ui.cpp" />
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>

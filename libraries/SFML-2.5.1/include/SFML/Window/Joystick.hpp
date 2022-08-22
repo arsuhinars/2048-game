@@ -162,7 +162,7 @@ public:
     /// in this case the joystick states are not updated automatically.
     ///
     ////////////////////////////////////////////////////////////
-    static void update();
+    static void updateShapes();
 };
 
 } // namespace sf

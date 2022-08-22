@@ -101,3 +101,6 @@ ipch/
 
 # Visual Studio Trace Files
 *.e2e
+
+# Game files
+save.ini

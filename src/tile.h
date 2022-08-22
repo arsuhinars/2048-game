@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "rounded_rect.h"
 
 namespace arsuhinars
 {
@@ -46,15 +47,17 @@ namespace arsuhinars
 		// Проиграть анимацию
 		void playAnimation(Animation animation);
 
+		// Обновить размер тайла
+		void updateSize();
+
 	private:
 		sf::Text text;
-		sf::ConvexShape shape;
+		RoundedRectShape shape;
 
 		sf::Vector2f position;
 		unsigned int value = 0;
 
 		float moveFactor;
-		float moveDelta;
 		bool m_isMoving = false;
 		sf::Vector2f targetPosition;
 
@@ -64,7 +67,7 @@ namespace arsuhinars
 
 		float scaleFactor = 1.0f;
 
-		void updateColors();
+		void updateStyle();
 		void updateTextPosition();
 		void updateTextScale();
 	};

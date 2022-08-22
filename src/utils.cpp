@@ -5,6 +5,7 @@
 #include "utils.h"
 
 using namespace std;
+using namespace sf;
 
 unsigned int arsuhinars::utils::findPowerOfTwo(unsigned int power)
 {
@@ -15,6 +16,29 @@ unsigned int arsuhinars::utils::findPowerOfTwo(unsigned int power)
     }
     
     return cache[power];
+}
+
+float arsuhinars::utils::lerp(float a, float b, float t)
+{
+    return a + (b - a) * t;
+}
+
+sf::Vector2f arsuhinars::utils::lerpVector(const sf::Vector2f& a, const sf::Vector2f& b, float t)
+{
+    return sf::Vector2f(
+        lerp(a.x, b.x, t),
+        lerp(a.y, b.y, t)
+    );
+}
+
+sf::Color arsuhinars::utils::lerpColor(const sf::Color& a, const sf::Color& b, float t)
+{
+    return Color(
+        static_cast<unsigned int>(lerp(a.r, b.r, t)),
+        static_cast<unsigned int>(lerp(a.g, b.g, t)),
+        static_cast<unsigned int>(lerp(a.b, b.b, t)),
+        static_cast<unsigned int>(lerp(a.a, b.a, t))
+    );
 }
 
 float arsuhinars::utils::random()

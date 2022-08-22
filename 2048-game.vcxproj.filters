@@ -10,6 +10,8 @@
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\roboto.h" />
     <ClInclude Include="src\game_state.h" />
+    <ClInclude Include="src\ui.h" />
+    <ClInclude Include="src\button.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\field.cpp" />
@@ -19,6 +21,8 @@
     <ClCompile Include="src\rounded_rect.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\game_state.cpp" />
+    <ClCompile Include="src\ui.cpp" />
+    <ClCompile Include="src\button.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="LICENSE.txt" />

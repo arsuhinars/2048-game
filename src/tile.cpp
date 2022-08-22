@@ -5,24 +5,16 @@
 #include "field.h"
 #include "tile.h"
 #include "utils.h"
-#include "rounded_rect.h"
 
 using namespace std;
 using namespace sf;
 
 arsuhinars::Tile::Tile(sf::Vector2f position, unsigned int value)
-{
-	auto tileSize = static_cast<float>(calcTileSize());
-
-	shape = createRoundedRect(
-		Vector2f(tileSize, tileSize), tileSize * game::theme.tileRounding
-	);
-	shape.setOrigin(Vector2f(0.5f, 0.5f) * tileSize);
-	
+{	
 	text.setFont(*game::font);
 	text.setStyle(Text::Bold);
-	text.setCharacterSize(static_cast<unsigned int>(tileSize * game::theme.tileTextSize));
 
+	updateSize();
 	setPosition(position);
 	setValue(value);
 }
@@ -55,7 +47,7 @@ void arsuhinars::Tile::render()
 {
 	// Анимируем перемещение тайла
 	if (m_isMoving) {
-		moveFactor += moveDelta * game::getTimeDelta();
+		moveFactor += game::getTimeDelta() / TILE_TRANSITION_TIME;
 
 		Vector2f pos;
 		if (moveFactor >= 1.0f) {
@@ -64,9 +56,7 @@ void arsuhinars::Tile::render()
 			pos = targetPosition;
 		}
 		else {
-			pos = targetPosition - position;
-			pos *= moveFactor;
-			pos += position;
+			pos = utils::lerpVector(position, targetPosition, moveFactor);
 		}
 		
 		shape.setPosition(calcTileScreenPos(pos));
@@ -84,12 +74,12 @@ void arsuhinars::Tile::render()
 			// Анимируем тайл
 			switch (currAnim) {
 			case Animation::Appear:
-				scaleFactor = 0.5f + 0.5f * animFactor;
+				scaleFactor = utils::lerp(0.5f, 1.0f, animFactor);
 				break;
 			case Animation::ChangeValue:
 				scaleFactor = animFactor < 0.5f ? 
-					1.0f + 0.4f * animFactor :
-					1.2f - (animFactor - 0.5f) * 0.4f;
+					utils::lerp(1.0f, 1.2f, animFactor * 2.0f) :
+					utils::lerp(1.2f, 1.0f, animFactor * 2.0f - 1.0f);
 				break;
 			}
 		}
@@ -123,7 +113,7 @@ void arsuhinars::Tile::setValue(unsigned int value)
 
 	text.setString(to_string(utils::findPowerOfTwo(value)));
 
-	updateColors();
+	updateStyle();
 	updateTextScale();
 	updateTextPosition();
 }
@@ -141,7 +131,6 @@ bool arsuhinars::Tile::isMoving()
 void arsuhinars::Tile::moveTo(sf::Vector2f position)
 {
 	moveFactor = 0.0f;
-	moveDelta = 1.0f / TILE_TRANSITION_TIME;
 	m_isMoving = true;
 	targetPosition = position;
 }
@@ -184,7 +173,24 @@ void arsuhinars::Tile::updateTextScale()
 	);
 }
 
-void arsuhinars::Tile::updateColors()
+void arsuhinars::Tile::updateSize()
+{
+	auto tileSize = static_cast<float>(calcTileSize());
+
+	shape.setSize(Vector2f(tileSize, tileSize));
+	shape.setRadius(tileSize * game::theme.tileRounding);
+	shape.setOrigin(Vector2f(0.5f, 0.5f) * tileSize);
+	shape.setPosition(calcTileScreenPos(position));
+
+	text.setCharacterSize(
+		static_cast<unsigned int>(calcTileSize() * game::theme.tileTextSize)
+	);
+
+	updateTextPosition();
+	updateTextScale();
+}
+
+void arsuhinars::Tile::updateStyle()
 {
 	auto tileColorIndex = min(static_cast<size_t>(value), game::theme.tileColors.size() - 1);
 

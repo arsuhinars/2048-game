@@ -14,11 +14,20 @@ namespace arsuhinars
 		// Метод инициализации поля
 		void init();
 
+		// Метод обработки изменения размера поля, занимаемого на экране
+		void updateFieldSize();
+
+		// Метод обновления размеров тайлов, занимаемого ими на экране
+		void updateTilesSizes();
+
 		// Метод отрисовки поля игры
 		void render();
 
 		// Метод создания новой случайной плитки
 		void spawnTile();
+
+		// Метод обработки нажатий клавиш
+		void handleInput(const sf::Keyboard::Key& key);
 
 		// Функции перемещения всех тайлов в соотвествующую сторону
 		void moveTilesUp();
@@ -32,5 +41,8 @@ namespace arsuhinars
 
 		// Двигается ли какой-нибудь тайл
 		bool isAnyTileMoving();
+
+		// Может ли игрок сделать ход
+		bool isThereAnyMove();
 	}
 }

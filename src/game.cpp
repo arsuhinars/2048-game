@@ -3,6 +3,7 @@
 #include "config.h"
 #include "game.h"
 #include "field.h"
+#include "ui.h"
 #include "roboto.h"
 
 using namespace std;
@@ -12,20 +13,26 @@ using namespace arsuhinars;
 unique_ptr<RenderWindow> game::window;
 unique_ptr<Font> game::font = make_unique<Font>();
 Theme		game::theme = defaultTheme;
-IntRect		game::fieldRect;
+FloatRect	game::fieldRect;
+FloatRect	game::topBarRect;
 GameState	game::state;
+Vector2f	game::mousePos;
 
 static bool isRunning = false;	// Запущена ли игра
 static Clock gameClock;			// Игровые часы
 static float timeDelta;			// Время в секундах, прошедшее с последнего кадра
+static unsigned int oldScore;	// Предыдущее значение счета
 
 void arsuhinars::game::run()
 {
+	state.load();
+	oldScore = state.score;
+
 	// Создаем окно игры
 	window = make_unique<RenderWindow>(
-		VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+		VideoMode(state.windowWidth, state.windowHeight),
 		WINDOW_TITLE,
-		Style::Close | Style::Titlebar,
+		Style::Close | Style::Titlebar | Style::Resize,
 		ContextSettings(
 			0U, 0U, ANTIALIAZING_LEVEL
 		)
@@ -35,21 +42,17 @@ void arsuhinars::game::run()
 	// Загружаем шрифт
 	font->loadFromMemory(Roboto_Regular_ttf, Roboto_Regular_ttf_len);
 
-	// Находим область игрового поля на экране
-	fieldRect.width = min(WINDOW_WIDTH, WINDOW_HEIGHT);
-	fieldRect.height = fieldRect.width;
-	if (WINDOW_WIDTH > WINDOW_HEIGHT) {
-		fieldRect.left = static_cast<int>((WINDOW_WIDTH - WINDOW_HEIGHT) / 2.0f);
-		fieldRect.top = 0;
-	}
-	else {
-		fieldRect.left = 0;
-		fieldRect.top = static_cast<int>((WINDOW_HEIGHT - WINDOW_WIDTH) / 2.0f);
-	}
+	handleResize();
+
+	// Иницилизируем интерфейс
+	ui::init();
 
 	// Загружаем игровое поле
-	state.load();
 	field::init();
+
+	if (state.isGameLost) {
+		lose();
+	}
 
 	gameClock.restart();
 
@@ -71,8 +74,19 @@ void arsuhinars::game::run()
 
 void arsuhinars::game::reset()
 {
+	state.score = 0;
+	state.isGameLost = false;
+
+	ui::hideLoseMenu();
+	ui::updateText();
 	state.tilemap.clear();
 	field::init();
+}
+
+void arsuhinars::game::lose()
+{
+	state.isGameLost = true;
+	ui::showLoseMenu();
 }
 
 void arsuhinars::game::update()
@@ -81,18 +95,53 @@ void arsuhinars::game::update()
 	while (window->pollEvent(ev)) {
 		// Обрабатываем события окна
 		switch (ev.type) {
-		case Event::KeyPressed:
-			// Клавиша нажата
-			handleInput(ev.key);
-			break;
-		case Event::Closed:
-			// Окно было закрыто
-			isRunning = false;
-			break;
+			case Event::KeyPressed: {
+				// Клавиша нажата
+				handleInput(ev.key);
+				break;
+			}
+			case Event::MouseMoved: {
+				mousePos = Vector2f(
+					static_cast<float>(ev.mouseMove.x),
+					static_cast<float>(ev.mouseMove.y)
+				);
+				break;
+			}
+			case Event::Resized: {
+				// У окна был изменен размер
+				FloatRect visibleArea(
+					0.0f,
+					0.0f,
+					static_cast<float>(ev.size.width),
+					static_cast<float>(ev.size.height)
+				);
+				window->setView(View(visibleArea));
+				handleResize();
+				ui::updateSize();
+				field::updateFieldSize();
+				field::updateTilesSizes();
+				break;
+			}
+			case Event::Closed: {
+				// Окно было закрыто
+				isRunning = false;
+				break;
+			}
 		}
 	}
 
 	timeDelta = gameClock.restart().asSeconds();
+
+	if (state.score != oldScore) {
+		if (state.score > state.record) {
+			state.record = state.score;
+		}
+
+		if (state.score > oldScore) {
+			ui::showScoresPopUp(state.score - oldScore);
+		}
+		ui::updateText();
+	}
 }
 
 void arsuhinars::game::render()
@@ -100,39 +149,64 @@ void arsuhinars::game::render()
 	window->clear(theme.background);
 
 	field::render();
+	ui::render();
 
 	window->display();
 }
 
 void arsuhinars::game::handleInput(sf::Event::KeyEvent& ev)
 {
-	if (field::isAnyTileMoving()) {
-		return;
+	if (!state.isGameLost) {
+		field::handleInput(ev.code);
 	}
 
-	switch (ev.code) {
-	// Обрабатываем кнопки перемещения
-	case Keyboard::Up:
-	case Keyboard::W:
-		field::moveTilesUp();
-		break;
-	case Keyboard::Right:
-	case Keyboard::D:
-		field::moveTilesRight();
-		break;
-	case Keyboard::Down:
-	case Keyboard::S:
-		field::moveTilesDown();
-		break;
-	case Keyboard::Left:
-	case Keyboard::A:
-		field::moveTilesLeft();
-		break;
-	case Keyboard::R:
+	if (ev.code == Keyboard::R) {
 		// Кнопка сброса игры
 		reset();
-		break;
+		return;
 	}
+}
+
+void arsuhinars::game::handleResize()
+{
+	auto windowSize = window->getSize();
+
+	// Находим область игрового поля на экране
+	fieldRect.width = windowSize.x;
+	fieldRect.height = fieldRect.width;
+
+	topBarRect.width = fieldRect.width;
+	topBarRect.height = game::theme.topBarSize * fieldRect.width;
+
+	float totalHeight = fieldRect.width + topBarRect.height;
+	if (totalHeight > windowSize.y) {
+		float scale = windowSize.y / totalHeight;
+
+		fieldRect.width *= scale;
+		fieldRect.height *= scale;
+		topBarRect.width *= scale;
+		topBarRect.height *= scale;
+
+		fieldRect.left = (windowSize.x - fieldRect.width) / 2.0f;
+		topBarRect.left = fieldRect.left;
+		fieldRect.top = topBarRect.height;
+		topBarRect.top = 0.0f;
+	}
+	else {
+		topBarRect.left = 0.0f;
+		fieldRect.left = 0.0f;
+		topBarRect.top = (windowSize.y - totalHeight) / 2.0f;
+		fieldRect.top = topBarRect.top + topBarRect.height;
+	}
+
+	//if (windowSize.x > windowSize.y) {
+	//	fieldRect.left = static_cast<int>((windowSize.x - windowSize.y) / 2.0f);
+	//	fieldRect.top = 0;
+	//}
+	//else {
+	//	fieldRect.left = 0;
+	//	fieldRect.top = static_cast<int>((windowSize.y - windowSize.x) / 2.0f);
+	//}
 }
 
 float arsuhinars::game::getTimeDelta()

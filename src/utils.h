@@ -2,6 +2,7 @@
 #include <map>
 #include <string>
 #include <random>
+#include <SFML/Graphics.hpp>
 
 namespace arsuhinars
 {
@@ -11,6 +12,15 @@ namespace arsuhinars
 
 		// Функция нахождения степени двойки
 		unsigned int findPowerOfTwo(unsigned int power);
+
+		// Функция интерполяции двух чисел
+		float lerp(float a, float b, float t);
+
+		// Функция интерполяции векторов
+		sf::Vector2f lerpVector(const sf::Vector2f& a, const sf::Vector2f& b, float t);
+
+		// Функция интерполяции цвета
+		sf::Color lerpColor(const sf::Color& a, const sf::Color& b, float t);
 
 		// Возвращает случайное число в диапозоне [0, 1)
 		float random();

@@ -28,6 +28,26 @@ namespace arsuhinars
 		float tileTextSize;
 		// Отступ от края для текста тайла
 		float tileTextMargin;
+
+		sf::Color overlayColor;		// Цвет оверлея
+
+		float labelSize;			// Размер заголовка
+		float textSize;				// Размер обычного текста
+		sf::Color textColor;		// Цвет текста
+
+		sf::Color buttonColor;		// Цвет кнопки
+		sf::Color buttonHoverColor;	// Цвет подсвеченной кнопки
+		sf::Color buttonTextColor;	// Цвет текста кнопки
+		float buttonRounding;		// Закругление у кнопки
+		float buttonTextMargin;		// Размер отступа текста у кнопки
+
+		sf::Color topBarColor;		// Цвет фона верхней панели
+		sf::Color topBarTextColor;	// Цвет текста верхней панели
+
+		float topBarSize;			// Размер верхней панели
+		float topBarPadding;		// Отступ верхней панели от края
+		float topBarSpacing;		// Отступы между верхними панелями
+		float topBarRounding;		// Закругление верхней панели
 	};
 
 	// Стандартная тема игры
@@ -56,5 +76,20 @@ namespace arsuhinars
 		0.125f,		// tileRounding
 		0.5f,		// tileTextSize		
 		0.15f,		// tileTextMargin
+		sf::Color(0xFBECB096),	// overlayColor
+		0.15f,					// labelSize
+		0.1f,					// textSize
+		sf::Color(0x776E65FF),	// textColor
+		sf::Color(0xF3B27AFF),	// buttonColor
+		sf::Color(0xDAA06DFF),	// buttonHoverColor
+		sf::Color(0xF9F6F2FF),	// buttonTextColor
+		0.03125f,				// buttonRounding
+		0.125f,					// buttonTextMargin
+		sf::Color(0xBBADA0FF),	// topBarColor
+		sf::Color(0xF9F6F2FF),	// topBarTextColor
+		0.125f,					// topBarSize
+		0.02f,					// topBarPadding
+		0.125f,					// topBarSpacing
+		0.03125f,				// topBarRounding
 	};
 }
