@@ -12,6 +12,8 @@
     <ClInclude Include="src\game_state.h" />
     <ClInclude Include="src\ui.h" />
     <ClInclude Include="src\button.h" />
+    <ClInclude Include="src\glow_effect.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\field.cpp" />
@@ -23,11 +25,18 @@
     <ClCompile Include="src\game_state.cpp" />
     <ClCompile Include="src\ui.cpp" />
     <ClCompile Include="src\button.cpp" />
+    <ClCompile Include="src\glow_effect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
 </Project>

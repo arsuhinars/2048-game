@@ -59,8 +59,7 @@ void arsuhinars::Tile::render()
 			pos = utils::lerpVector(position, targetPosition, moveFactor);
 		}
 		
-		shape.setPosition(calcTileScreenPos(pos));
-		updateTextPosition();
+		setPosition(pos);
 	}
 
 	if (currAnim != Animation::None) {
@@ -88,6 +87,7 @@ void arsuhinars::Tile::render()
 		updateTextScale();
 	}
 
+	game::window->draw(glow);
 	game::window->draw(shape);
 
 	if (value > 0) {
@@ -100,6 +100,8 @@ void arsuhinars::Tile::setPosition(sf::Vector2f position)
 	Tile::position = position;
 
 	shape.setPosition(calcTileScreenPos(position));
+	glow.setPosition(shape.getPosition());
+	updateTextPosition();
 }
 
 sf::Vector2f arsuhinars::Tile::getPosition()
@@ -182,6 +184,12 @@ void arsuhinars::Tile::updateSize()
 	shape.setOrigin(Vector2f(0.5f, 0.5f) * tileSize);
 	shape.setPosition(calcTileScreenPos(position));
 
+	glow.setSize(shape.getSize());
+	glow.setOrigin(shape.getOrigin());
+	glow.setRadius(shape.getRadius());
+	glow.setPosition(shape.getPosition());
+	glow.setGlowBlur(tileSize * game::theme.tileGlowBlur);
+
 	text.setCharacterSize(
 		static_cast<unsigned int>(calcTileSize() * game::theme.tileTextSize)
 	);
@@ -196,7 +204,9 @@ void arsuhinars::Tile::updateStyle()
 
 	auto& color1 = get<0>(game::theme.tileColors[tileColorIndex]);
 	auto& color2 = get<1>(game::theme.tileColors[tileColorIndex]);
+	auto& color3 = get<2>(game::theme.tileColors[tileColorIndex]);
 
 	shape.setFillColor(color1);
 	text.setFillColor(color2);
+	glow.setGlowColor(color3);
 }

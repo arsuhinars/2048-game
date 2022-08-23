@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "rounded_rect.h"
+#include "glow_effect.h"
 
 namespace arsuhinars
 {
@@ -53,6 +54,7 @@ namespace arsuhinars
 	private:
 		sf::Text text;
 		RoundedRectShape shape;
+		GlowEffect glow;
 
 		sf::Vector2f position;
 		unsigned int value = 0;

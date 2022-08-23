@@ -1,10 +1,13 @@
 #include <algorithm>
 #include <SFML/System.hpp>
+#include <Windows.h>
+#include "../resource.h"
 #include "config.h"
 #include "game.h"
 #include "field.h"
 #include "ui.h"
 #include "roboto.h"
+#include "glow_effect.h"
 
 using namespace std;
 using namespace sf;
@@ -38,6 +41,16 @@ void arsuhinars::game::run()
 		)
 	);
 	window->setFramerateLimit(FRAMERATE_LIMIT);
+	
+	// Загружаем иконку
+	HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+	HWND hwnd = window->getSystemHandle();
+
+	SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+	SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+
+	SendMessage(GetWindow(hwnd, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+	SendMessage(GetWindow(hwnd, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 
 	// Загружаем шрифт
 	font->loadFromMemory(Roboto_Regular_ttf, Roboto_Regular_ttf_len);
